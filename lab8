@@ -1,0 +1,111 @@
+#include<stdio.h>
+#include<stdlib.h>
+struct node {
+    int key;
+    struct node *left, *right;
+};
+
+typedef struct node Node;
+
+Node* createNode(int key) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->key = key;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+Node* insertNode(Node* root, int key) {
+    if (root == NULL)
+        return createNode(key);
+
+    if (key < root->key)
+        root->left = insertNode(root->left, key);
+    else if (key > root->key)
+        root->right = insertNode(root->right, key);
+
+    return root;
+}
+
+void inorderTraversal(Node* root) {
+    if (root != NULL) {
+        inorderTraversal(root->left);
+        printf("%d ", root->key);
+        inorderTraversal(root->right);
+    }
+}
+
+void preorderTraversal(Node* root) {
+    if (root != NULL) {
+        printf("%d ", root->key);
+        preorderTraversal(root->left);
+        preorderTraversal(root->right);
+    }
+}
+
+void postorderTraversal(Node* root) {
+    if (root != NULL) {
+        postorderTraversal(root->left);
+        postorderTraversal(root->right);
+        printf("%d ", root->key);
+    }
+}
+
+Node* searchKey(Node* root, int key) {
+    if (root == NULL || root->key == key)
+        return root;
+
+    if (key < root->key)
+        return searchKey(root->left, key);
+
+    return searchKey(root->right, key);
+}
+
+int main() {
+    Node* root = NULL;
+    int choice, key, num;
+
+    printf("Enter the number of elements in the BST: ");
+    scanf("%d", &num);
+
+    printf("Enter the elements:\n");
+    for (int i = 0; i < num; i++) {
+        scanf("%d", &key);
+        root = insertNode(root, key);
+    }
+
+    while(1) {
+        printf("\nEnter your choice:");
+        printf("\n1. Inorder Traversal\t2. Preorder Traversal\t3. Postorder Traversal\t4.exit\t5. Search Element\n");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1:
+                printf("\nInorder traversal: ");
+                inorderTraversal(root);
+                break;
+            case 2:
+                printf("\nPreorder traversal: ");
+                preorderTraversal(root);
+                break;
+            case 3:
+                printf("\nPostorder traversal: ");
+                postorderTraversal(root);
+                break;
+            case 4:
+			printf("\nExiting");
+			exit(0);
+            break;
+			case 5:
+                printf("\nEnter the key to search: ");
+                scanf("%d", &key);
+                Node* result = searchKey(root, key);
+                if (result != NULL)
+                    printf("\nKey %d found in the BST.", key);
+                else
+                    printf("\nKey %d not found in the BST.", key);
+                break;
+            
+        }
+    }
+    return 0;
+}
