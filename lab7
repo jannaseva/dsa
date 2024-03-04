@@ -1,0 +1,160 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Employee structure
+struct Employee {
+    int ssn;
+    char name[50];
+    char dept[50];
+    struct Employee* prev;
+    struct Employee* next;
+};
+
+// Global variable to store the head of the DLL
+struct Employee* head = NULL;
+
+// Function to create a new employee node
+struct Employee* createNode(int ssn, char* name, char* dept) {
+    struct Employee* newNode = (struct Employee*)malloc(sizeof(struct Employee));
+    newNode->ssn = ssn;
+    strcpy(newNode->name, name);
+    strcpy(newNode->dept, dept);
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to insert a new node at the front of the DLL
+void insertAtFront(int ssn, char* name, char* dept) {
+    struct Employee* newNode = createNode(ssn, name, dept);
+    if (head == NULL) {
+        head = newNode;
+    } else {
+        newNode->next = head;
+        head->prev = newNode;
+        head = newNode;
+    }
+}
+
+// Function to insert a new node to the right of a key value
+void insertAfterKey(int key, int ssn, char* name, char* dept) {
+    struct Employee* newNode = createNode(ssn, name, dept);
+    struct Employee* temp = head;
+    while (temp != NULL && temp->ssn != key) {
+        temp = temp->next;
+    }
+    if (temp == NULL) {
+        printf("Key not found\n");
+    } else {
+        newNode->next = temp->next;
+        if (temp->next != NULL) {
+            temp->next->prev = newNode;
+        }
+        temp->next = newNode;
+        newNode->prev = temp;
+    }
+}
+
+// Function to insert a new node at the end of the DLL
+void insertAtEnd(int ssn, char* name, char* dept) {
+    struct Employee* newNode = createNode(ssn, name, dept);
+    struct Employee* temp = head;
+    if (temp == NULL) {
+        head = newNode;
+    } else {
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->prev = temp;
+    }
+}
+
+// Function to delete the last node of the DLL
+void deleteAtEnd() {
+    struct Employee* temp = head;
+    if (temp == NULL) {
+        printf("DLL is empty\n");
+    } else if (temp->next == NULL) {
+        free(temp);
+        head = NULL;
+    } else {
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->prev->next = NULL;
+        free(temp);
+    }
+}
+
+// Function to display the status of the DLL and count the number of nodes
+void displayAndCount() {
+    struct Employee* temp = head;
+    int count = 0;
+    if(temp==NULL){
+    	printf("\nThe Doubly linked list is empty");
+    	return;
+	}
+    printf("Doubly Linked List Status:\n");
+    while (temp != NULL) {
+        printf("SSN: %d, Name: %s, Dept: %s\n", temp->ssn, temp->name, temp->dept);
+        temp = temp->next;
+        count++;
+    }
+    printf("Number of nodes: %d\n", count);
+}
+
+// Function to free the memory allocated for the DLL
+void freeDLL() {
+    struct Employee* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    int choice, ssn, key;
+    char name[50], dept[50];
+    while(1) {
+        printf("\n1. Insert at front\n2. Insert after key\n3. Insert at end\n");
+        printf("4. Delete at end\n5. Display and count\n6.free the node\n7. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                printf("Enter SSN, Name, Dept: ");
+                scanf("%d %s %s", &ssn, name, dept);
+                insertAtFront(ssn, name, dept);
+                break;
+            case 2:
+                printf("Enter key, SSN, Name, Dept: ");
+                scanf("%d %d %s %s", &key, &ssn, name, dept);
+                insertAfterKey(key, ssn, name, dept);
+                break;
+            case 3:
+                printf("Enter SSN, Name, Dept: ");
+                scanf("%d %s %s", &ssn, name, dept);
+                insertAtEnd(ssn, name, dept);
+                break;
+            case 4:
+                deleteAtEnd();
+                break;
+            case 5:
+                displayAndCount();
+                break;
+            case 6:
+                freeDLL();
+                printf("\nall nodes are deleted");
+                break;
+            case 7: exit(0);
+            printf("\nExiting the program\n");
+            break;
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+    return 0;
+}
